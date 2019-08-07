@@ -34,32 +34,18 @@ function scanInterfaceBuilderFiles($dir) {
         }
         else {
             if (strpos($file, '.storyboard') !== false || strpos($file, '.xib') !== false) {
-                $changed = replaceCalibratedRGBColorSpace($dir.'/'.$file);
-                echo 'file = ', $file, " " ,($changed ? "[Change]" : "[OK]"), "\n";
-            }
-            if (strpos($file, '.storyboard') !== false || strpos($file, '.xib') !== false) {
-                $changed = replaceP3ColorSpace($dir.'/'.$file);
+                $changed = replaceColorSpace($dir.'/'.$file);
                 echo 'file = ', $file, " " ,($changed ? "[Change]" : "[OK]"), "\n";
             }
         }
     }
 }
 
-function replaceCalibratedRGBColorSpace($filePath) {
+function replaceColorSpace($filePath) {
     $fileContents = file_get_contents($filePath);
-    $replaceContents = str_replace('colorSpace="custom" customColorSpace="sRGB"', 'colorSpace="calibratedRGB"', $fileContents);
-    if($replaceContents == $fileContents) {
-        return false;
-    }
-    else {
-        file_put_contents($filePath, $replaceContents);
-        return true;
-    }
-}
+    $replaceContents = str_replace('colorSpace="calibratedRGB"', 'colorSpace="custom" customColorSpace="sRGB"', $fileContents);
+    $replaceContents = str_replace('colorSpace="custom" customColorSpace="displayP3"', 'colorSpace="custom" customColorSpace="sRGB"', $replaceContents);
 
-function replaceP3ColorSpace($filePath) {
-    $fileContents = file_get_contents($filePath);
-    $replaceContents = str_replace('colorSpace="custom" customColorSpace="sRGB"', 'colorSpace="custom" customColorSpace="displayP3"', $fileContents);
     if($replaceContents == $fileContents) {
         return false;
     }
